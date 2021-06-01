@@ -2,11 +2,22 @@ import sys
 import numpy as np
 import time
 import logging
+from matplotlib import pyplot as plt
+import seaborn as sns
 
 kmax = int(sys.argv[1])
 r = int(sys.argv[2])
 amin = sys.argv[3]
 amax = sys.argv[4]
+
+def plotResults(k, tNaive, tList, tStrassen):
+    x = list(range(1, k+1))
+    a = sns.lineplot(x, tNaive, label="Naive")
+    a = sns.lineplot(x, tList, label="List Comprehesion")
+    a = sns.lineplot(x, tStrassen, label="Strassen")
+    a.set(xlabel='Tamanho da entrada 2^', ylabel='tempo de execução médio (s)')
+    a.legend()
+    plt.show()
 
 def MultiplyMatrix(A, B):
     """Multiply two matrices using naive algorithm"""
@@ -96,4 +107,5 @@ if __name__ == "__main__":
 
         logging.debug("2^%d: {Naive: %f}, {List: %f}, {Strassen: %f}", n, tNaive[n-1], tList[n-1], tStrassen[n-1])
         logging.info("2^%d: Average {Naive: %f}, {List: %f}, {Strassen: %f}", n, tNaive[n-1]/r, tList[n-1]/r, tStrassen[n-1]/r)
-        #print("2^",n , ": ",tNaive[n-1]/r, tList[n-1]/r, tStrassen[n-1]/r)
+ 
+    plotResults(kmax, [x/r for x in tNaive], [x/r for x in tList], [x/r for x in tStrassen])
