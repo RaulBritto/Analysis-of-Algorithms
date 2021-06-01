@@ -1,20 +1,15 @@
 import sys
 import numpy as np
 import time
+import logging
 
 kmax = int(sys.argv[1])
 r = int(sys.argv[2])
 amin = sys.argv[3]
 amax = sys.argv[4]
 
-tempoNormal = 0
-tempoLista = 0
-
-def printMatrix(matrix):
-    for line in matrix:
-        print("\t".join(map(str, line)))
-
 def MultiplyMatrix(A, B):
+    """Multiply two matrices using naive algorithm"""
     C = np.zeros((len(A), len(B)), dtype=int)
     
     for i in range(len(A)):
@@ -24,15 +19,17 @@ def MultiplyMatrix(A, B):
     return C
 
 def addMatrix(A,B):
+    """Add two matrices"""
     return [[A[i][j] + B[i][j] for j in range(len(A))] for i in range(len(B))]
 
 def subMatrix(A,B):
+    """subtraction two matrices"""
     return [[A[i][j] - B[i][j] for j in range(len(A))] for i in range(len(B))]
 
 def Strassen(A, B):
-    """Strassen Algorithm"""
+    """Strassen Algorithm to squared matrices"""
     if len(A) <= 2:
-        return  list_comp_matrix_multiplication(A, B)
+        return  matrixMultiplicationListComprehesion(A, B)
     else:
         n = int(len(A)/2)
 
@@ -64,39 +61,39 @@ def Strassen(A, B):
         return C
 
 
-def list_comp_matrix_multiplication(A, B):
-    """Third and final version of the list comprehension matrix multiplication."""
+def matrixMultiplicationListComprehesion(A, B):
+    """Multiply two squared matrices using list comprehesion"""
     return [[sum([x*y for (x, y) in zip(row, col)]) for col in zip(*B)] for row in A]
 
 if __name__ == "__main__":
+    
+    tNaive = [0] * kmax 
+    tList = [0] * kmax
+    tStrassen = [0] * kmax
+
+    format = "%(asctime)s: %(message)s"
+    logging.basicConfig(format=format, level=logging.INFO, datefmt="%Y-%m-%d %H:%M:%S")
+
     for n in range(1, kmax+1):
-        tempoNormal = 0 
-        tempoLista = 0
-        tempoStrassen = 0
         for _ in range(r):
             A = np.random.randint(low = amin, high = amax, size = (2**n,2**n))
             B = np.random.randint(low = amin, high = amax, size = (2**n,2**n))
 
-            #print("A: ", A)
-            #print("B: ", B)
-
             start_time = time.time()
             C = MultiplyMatrix(A,B)
             end_time = time.time()
-            tempoNormal += (end_time - start_time)
-            #print("C: ", C)
+            tNaive[n-1] += (end_time - start_time)
 
             start_time = time.time()
-            D = list_comp_matrix_multiplication(A,B)
+            D = matrixMultiplicationListComprehesion(A,B)
             end_time = time.time()
-            tempoLista += (end_time - start_time)
-            #print("D: ", D)
+            tList[n-1] += (end_time - start_time)
 
             start_time = time.time()
             E = Strassen(A,B)
             end_time = time.time()
-            tempoStrassen += (end_time - start_time)
-            #print("E: ", E)
+            tStrassen[n-1] += (end_time - start_time)
 
-
-        print("2^",n , ": ",tempoNormal, tempoLista, tempoStrassen)
+        logging.debug("2^%d: {Naive: %f}, {List: %f}, {Strassen: %f}", n, tNaive[n-1], tList[n-1], tStrassen[n-1])
+        logging.info("2^%d: Average {Naive: %f}, {List: %f}, {Strassen: %f}", n, tNaive[n-1]/r, tList[n-1]/r, tStrassen[n-1]/r)
+        #print("2^",n , ": ",tNaive[n-1]/r, tList[n-1]/r, tStrassen[n-1]/r)
