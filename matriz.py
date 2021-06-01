@@ -15,7 +15,7 @@ def plotResults(k, tNaive, tList, tStrassen):
     a = sns.lineplot(x, tNaive, label="Naive")
     a = sns.lineplot(x, tList, label="List Comprehesion")
     a = sns.lineplot(x, tStrassen, label="Strassen")
-    a.set(xlabel='Tamanho da entrada 2^', ylabel='tempo de execução médio (s)')
+    a.set(xlabel='Tamanho da entrada 2^x', ylabel='Tempo de execução médio (s)')
     a.legend()
     plt.show()
 
